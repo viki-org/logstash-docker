@@ -12,8 +12,8 @@ else
   VERSION_TAG := $(ELASTIC_VERSION)
 endif
 
-IMAGE_FLAVORS ?= oss full
-DEFAULT_IMAGE_FLAVOR ?= full
+IMAGE_FLAVORS ?= oss
+DEFAULT_IMAGE_FLAVOR ?= oss
 
 IMAGE_TAG := $(ELASTIC_REGISTRY)/logstash/logstash
 HTTPD ?= logstash-docker-artifact-server
@@ -82,14 +82,10 @@ demo: docker-compose clean-demo
 # Push the image to the dedicated push endpoint at "push.docker.elastic.co"
 push: test
 	$(foreach FLAVOR, $(IMAGE_FLAVORS), \
-	  docker tag $(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG) push.$(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG); \
-	  docker push push.$(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG); \
-	  docker rmi push.$(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG); \
+	  docker tag $(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG) viki/logstash-$(FLAVOR):$(VERSION_TAG); \
+	  docker push viki/logstash-$(FLAVOR):$(VERSION_TAG); \
+	  docker rmi viki/logstash-$(FLAVOR):$(VERSION_TAG); \
 	)
-	# Also push the default version, with no suffix like '-oss' or '-full'
-	docker tag $(IMAGE_TAG):$(VERSION_TAG) push.$(IMAGE_TAG):$(VERSION_TAG);
-	docker push push.$(IMAGE_TAG):$(VERSION_TAG);
-	docker rmi push.$(IMAGE_TAG):$(VERSION_TAG);
 
 # The tests are written in Python. Make a virtualenv to handle the dependencies.
 venv: requirements.txt
